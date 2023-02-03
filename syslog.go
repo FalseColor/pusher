@@ -37,7 +37,11 @@ func (s *SysLog) Connect() error {
 	s.dial = dial
 	return nil
 }
-func (s *SysLog) Open() {
+func (s *SysLog) Open() error {
+	err := s.Connect()
+	if err != nil {
+		return err
+	}
 	s.stopChannel = make(chan int)
 	s.status = 1
 	go func() {
@@ -56,6 +60,7 @@ func (s *SysLog) Open() {
 			time.Sleep(5 * time.Second)
 		}
 	}()
+	return nil
 
 }
 func (s *SysLog) Close() {
@@ -77,7 +82,6 @@ func NewSysLogMessageSender(name string, topic string, network network, address 
 		network: string(network),
 		address: address,
 	}
-	err := log.Connect()
-	log.Open()
+	err := log.Open()
 	return &log, err
 }

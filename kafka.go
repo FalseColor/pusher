@@ -42,7 +42,11 @@ func (k *Kafka) Connect() error {
 	k.dial = client
 	return nil
 }
-func (k *Kafka) Open() {
+func (k *Kafka) Open() error {
+	err := k.Connect()
+	if err != nil {
+		return err
+	}
 	k.status = 1
 	k.stopChannel = make(chan int)
 	go func() {
@@ -60,6 +64,7 @@ func (k *Kafka) Open() {
 			time.Sleep(5 * time.Second)
 		}
 	}()
+	return nil
 
 }
 func (k *Kafka) Close() {
@@ -80,7 +85,7 @@ func NewKafkaMessageSender(name string, address []string, username string, passw
 		username: username,
 		password: password,
 	}
-	err := kafka.Connect()
-	kafka.Open()
+
+	err := kafka.Open()
 	return &kafka, err
 }
