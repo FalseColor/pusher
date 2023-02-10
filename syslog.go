@@ -75,13 +75,12 @@ func (s *SysLog) GetName() string {
 	return s.name
 }
 
-func NewSysLogMessageSender(name string, topic string, network network, address string) (MessageSender, error) {
+func NewSysLogMessageSender(name string, topic string, network network, address string) MessageSender {
 	log := SysLog{
 		name:    name,
 		topic:   topic,
 		network: string(network),
 		address: address,
 	}
-	err := log.Open()
-	return &log, err
+	return &log
 }

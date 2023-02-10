@@ -7,16 +7,12 @@ import (
 )
 
 func TestSenderGroup_Add(t *testing.T) {
-	sender1, err := NewSysLogMessageSender("1", "topic1", "tcp", "192.168.1.231:514")
-	if err != nil {
-		t.FailNow()
-	}
-	sender2, err := NewSysLogMessageSender("2", "topic2", "tcp", "192.168.1.231:514")
-	if err != nil {
-		t.FailNow()
-	}
+	sender1 := NewSysLogMessageSender("1", "topic1", "tcp", "192.168.1.231:514")
+	sender2 := NewSysLogMessageSender("2", "topic2", "tcp", "192.168.1.231:514")
 	senders.Add(sender1)
 	senders.Add(sender2)
+	sender1.Open()
+	sender2.Open()
 
 	go func() {
 		for i := 0; i < 100; i++ {
@@ -37,16 +33,12 @@ func TestSenderGroup_Add(t *testing.T) {
 	}
 }
 func TestSenderGroup_Delete(t *testing.T) {
-	sender1, err := NewSysLogMessageSender("1", "topic1", "tcp", "192.168.1.231:514")
-	if err != nil {
-		t.FailNow()
-	}
-	sender2, err := NewSysLogMessageSender("2", "topic2", "tcp", "192.168.1.231:514")
-	if err != nil {
-		t.FailNow()
-	}
+	sender1 := NewSysLogMessageSender("1", "topic1", "tcp", "192.168.1.231:514")
+	sender2 := NewSysLogMessageSender("2", "topic2", "tcp", "192.168.1.231:514")
 	senders.Add(sender1)
 	senders.Add(sender2)
+	sender1.Open()
+	sender2.Open()
 
 	time.Sleep(5 * time.Second)
 	senders.Delete("1")

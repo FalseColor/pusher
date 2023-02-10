@@ -13,12 +13,15 @@ func (s *SenderGroup) Update(sender MessageSender) {
 	s.Delete(sender.GetName())
 	s.Add(sender)
 }
-func (s *SenderGroup) Get(name string) MessageSender {
-	value, _ := s.data.Load(name)
-	return value.(MessageSender)
+func (s *SenderGroup) Get(name string) (MessageSender, bool) {
+	value, found := s.data.Load(name)
+	return value.(MessageSender), found
 }
 func (s *SenderGroup) Delete(name string) {
-	s.Get(name).Close()
+	sender, found := s.Get(name)
+	if found {
+		sender.Close()
+	}
 	s.data.Delete(name)
 }
 func (s *SenderGroup) GetSpeed() uint64 {

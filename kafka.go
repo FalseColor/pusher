@@ -30,10 +30,11 @@ func (k *Kafka) Connect() error {
 	config := sarama.NewConfig()
 	config.Producer.RequiredAcks = sarama.WaitForAll          // 发送完数据需要leader和follow都确认
 	config.Producer.Partitioner = sarama.NewRandomPartitioner // 新选出一个partition
-	config.Producer.Return.Successes = false                  // 成功交付的消息不会在success channel返回
+	config.Producer.Return.Successes = true                   // 成功交付的消息不会在success channel返回
 	config.Net.SASL.Enable = true
 	config.Net.SASL.User = k.username
 	config.Net.SASL.Password = k.password
+	config.Version = sarama.V3_2_3_0
 	// 连接kafka
 	client, err := sarama.NewSyncProducer(k.address, config)
 	if err != nil {
@@ -77,7 +78,7 @@ func (k *Kafka) GetSpeed() uint64 {
 func (k *Kafka) GetName() string {
 	return k.name
 }
-func NewKafkaMessageSender(name string, address []string, username string, password string, topic string) (MessageSender, error) {
+func NewKafkaMessageSender(name string, address []string, username string, password string, topic string) MessageSender {
 	kafka := Kafka{
 		name:     name,
 		topic:    topic,
@@ -85,7 +86,5 @@ func NewKafkaMessageSender(name string, address []string, username string, passw
 		username: username,
 		password: password,
 	}
-
-	err := kafka.Open()
-	return &kafka, err
+	return &kafka
 }

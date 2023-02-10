@@ -7,4 +7,5 @@ type MessageSender interface {
 	Open() error // 状态计算
 	Close()      // 停止计算状态
 	GetSpeed() uint64
+	//Test()
 }
