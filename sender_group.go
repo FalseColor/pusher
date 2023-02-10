@@ -33,3 +33,10 @@ func (s *SenderGroup) GetSpeed() uint64 {
 	})
 	return speedCount
 }
+func (s *SenderGroup) DeleteAll() {
+	s.data.Range(func(key, value any) bool {
+		sender := value.(MessageSender)
+		s.Delete(sender.GetName())
+		return true
+	})
+}
