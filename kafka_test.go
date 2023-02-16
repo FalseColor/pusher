@@ -8,7 +8,7 @@ import (
 
 func TestNewKafkaMessageSender(t *testing.T) {
 
-	sender := NewKafkaMessageSender("http", []string{"192.168.1.231:9092"}, "cient1", "pass1", "top")
+	sender := NewKafkaMessageSender("http", []string{"192.168.1.231:9092"}, "client1", "pass1", "top")
 	err := sender.Connect()
 	sender.Send([]byte("888"))
 	senders.Add(sender)
@@ -28,6 +28,6 @@ func NewTestConfig() *sarama.Config {
 	config.Net.SASL.Enable = true
 	config.Net.SASL.User = "client1"
 	config.Net.SASL.Password = "pass1"
-	//config.Version = sarama.V3_2_3_0
+	config.Version = sarama.V3_2_3_0
 	return config
 }

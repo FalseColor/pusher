@@ -1,7 +1,6 @@
 package pusher
 
 import (
-	"fmt"
 	"testing"
 	"time"
 )
@@ -17,18 +16,18 @@ func TestSenderGroup_Add(t *testing.T) {
 	go func() {
 		for i := 0; i < 100; i++ {
 			time.Sleep(200 * time.Millisecond)
-			senders.Get("1").Send([]byte("message====111===message"))
+			//senders.Get("1").Send([]byte("message====111===message"))
 		}
 	}()
 	go func() {
 		for i := 0; i < 100; i++ {
 			time.Sleep(200 * time.Millisecond)
-			senders.Get("2").Send([]byte("message====222===message"))
+			//senders.Get("2").Send([]byte("message====222===message"))
 		}
 	}()
 	for i := 0; i < 10000; i++ {
 		time.Sleep(1 * time.Second)
-		fmt.Printf("总体速率：%d，1速率%d，2速率%d \n", senders.GetSpeed(), senders.Get("1").GetSpeed(), senders.Get("2").GetSpeed())
+		//fmt.Printf("总体速率：%d，1速率%d，2速率%d \n", senders.GetSpeed(), senders.Get("1").GetSpeed(), senders.Get("2").GetSpeed())
 
 	}
 }

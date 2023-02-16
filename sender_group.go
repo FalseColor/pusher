@@ -15,7 +15,10 @@ func (s *SenderGroup) Update(sender MessageSender) {
 }
 func (s *SenderGroup) Get(name string) (MessageSender, bool) {
 	value, found := s.data.Load(name)
-	return value.(MessageSender), found
+	if found {
+		return value.(MessageSender), found
+	}
+	return nil, found
 }
 func (s *SenderGroup) Delete(name string) {
 	sender, found := s.Get(name)
