@@ -26,6 +26,7 @@ func (k *Kafka) Send(message []byte) error {
 	msg.Value = sarama.ByteEncoder(message)
 	// 发送消息
 	_, _, err := k.dial.SendMessage(msg)
+	k.count += uint64(len(message))
 	return err
 }
 func (k *Kafka) SendAsync(message []byte) {

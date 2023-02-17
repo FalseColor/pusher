@@ -7,7 +7,7 @@ import (
 var senders = SenderGroup{}
 
 func TestSysLog_Send_TCP(t *testing.T) {
-	sender := NewSysLogMessageSender("sys1", "topic1", "tcp", "192.168.1.231:514")
+	sender := NewSysLogMessageSender("sys1", "topic1", "tcp", "192.168.1.231:514", 1)
 	senders.Add(sender)
 	//send := senders.Get("sys1")
 	//for i := 0; i < 10; i++ {
@@ -15,7 +15,7 @@ func TestSysLog_Send_TCP(t *testing.T) {
 	//}
 }
 func TestSysLog_Send_UDP(t *testing.T) {
-	sender := NewSysLogMessageSender("sys1", "topic1", "udp", "192.168.1.231:514")
+	sender := NewSysLogMessageSender("sys1", "topic1", "udp", "192.168.1.231:514", 1)
 	senders.Add(sender)
 	//send := senders.Get("sys1")
 	//for i := 0; i < 10; i++ {

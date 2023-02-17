@@ -1,13 +1,14 @@
 package pusher
 
 import (
+	"fmt"
 	"testing"
 	"time"
 )
 
 func TestSenderGroup_Add(t *testing.T) {
-	sender1 := NewSysLogMessageSender("1", "topic1", "tcp", "192.168.1.231:514")
-	sender2 := NewSysLogMessageSender("2", "topic2", "tcp", "192.168.1.231:514")
+	sender1 := NewSysLogMessageSender("1", "topic1", "tcp", "192.168.1.231:514", 1)
+	sender2 := NewSysLogMessageSender("2", "topic2", "tcp", "192.168.1.231:514", 1)
 	senders.Add(sender1)
 	senders.Add(sender2)
 	sender1.Open()
@@ -31,9 +32,30 @@ func TestSenderGroup_Add(t *testing.T) {
 
 	}
 }
+
+func TestSenderGroup_Speed(t *testing.T) {
+	sender := NewKafkaMessageSender("http1", []string{"192.168.1.231:9092"}, "client1", "pass1", "top111", 1)
+	err := sender.Open()
+	if err != nil {
+
+	}
+	senders.Add(sender)
+	go func() {
+		for {
+			time.Sleep(100 * time.Millisecond)
+			sender.SendAsync([]byte("888"))
+		}
+	}()
+
+	for i := 0; i < 10000; i++ {
+		time.Sleep(1 * time.Second)
+		fmt.Printf("总体速率：%d\n", senders.GetSpeed())
+
+	}
+}
 func TestSenderGroup_Delete(t *testing.T) {
-	sender1 := NewSysLogMessageSender("1", "topic1", "tcp", "192.168.1.231:514")
-	sender2 := NewSysLogMessageSender("2", "topic2", "tcp", "192.168.1.231:514")
+	sender1 := NewSysLogMessageSender("1", "topic1", "tcp", "192.168.1.231:514", 1)
+	sender2 := NewSysLogMessageSender("2", "topic2", "tcp", "192.168.1.231:514", 1)
 	senders.Add(sender1)
 	senders.Add(sender2)
 	sender1.Open()

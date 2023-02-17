@@ -8,10 +8,10 @@ import (
 
 func TestNewKafkaMessageSender(t *testing.T) {
 
-	sender := NewKafkaMessageSender("http", []string{"192.168.1.231:9092"}, "client1", "pass1", "top")
-	err := sender.Connect()
-	sender.SendAsync([]byte("888"))
-	senders.Add(sender)
+	//sender := NewKafkaMessageSender("http", []string{"192.168.1.231:9092"}, "client1", "pass1", "top111", 1)
+	//err := sender.Connect()
+	//sender.SendAsync([]byte("888"))
+	//senders.Add(sender)
 	client, err := sarama.NewClient([]string{"192.168.1.231:9092"}, NewTestConfig())
 	if err != nil {
 		t.FailNow()
