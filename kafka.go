@@ -16,6 +16,8 @@ type Kafka struct {
 	dial        sarama.SyncProducer
 	stopChannel chan int
 	status      int // 0关闭，1开启
+	workerCount int
+	limiter     *Limiter
 }
 
 func (k *Kafka) Send(message []byte) error {
@@ -25,6 +27,22 @@ func (k *Kafka) Send(message []byte) error {
 	// 发送消息
 	_, _, err := k.dial.SendMessage(msg)
 	return err
+}
+func (k *Kafka) SendAsync(message []byte) {
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				return
+			}
+		}()
+		allow := k.limiter.Allow()
+		if allow {
+			defer func() {
+				k.limiter.Done()
+			}()
+			k.Send(message)
+		}
+	}()
 }
 func (k *Kafka) Connect() error {
 	config := sarama.NewConfig()
@@ -50,6 +68,7 @@ func (k *Kafka) Open() error {
 	}
 	k.status = 1
 	k.stopChannel = make(chan int)
+	k.limiter = NewLimiter(k.workerCount)
 	go func() {
 		for {
 			select {
@@ -78,13 +97,14 @@ func (k *Kafka) GetSpeed() uint64 {
 func (k *Kafka) GetName() string {
 	return k.name
 }
-func NewKafkaMessageSender(name string, address []string, username string, password string, topic string) MessageSender {
+func NewKafkaMessageSender(name string, address []string, username string, password string, topic string, workerCount int) MessageSender {
 	kafka := Kafka{
-		name:     name,
-		topic:    topic,
-		address:  address,
-		username: username,
-		password: password,
+		name:        name,
+		topic:       topic,
+		address:     address,
+		username:    username,
+		password:    password,
+		workerCount: workerCount,
 	}
 	return &kafka
 }

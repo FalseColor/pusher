@@ -16,6 +16,8 @@ type SysLog struct {
 	dial        *syslog.Writer
 	stopChannel chan int
 	status      int // 0关闭，1开启
+	workerCount int
+	limiter     *Limiter
 }
 
 func (s *SysLog) Send(msg []byte) error {
@@ -28,6 +30,22 @@ func (s *SysLog) Send(msg []byte) error {
 	n, err := s.dial.Write(msg)
 	s.count += uint64(n)
 	return err
+}
+func (s *SysLog) SendAsync(msg []byte) {
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				return
+			}
+		}()
+		allow := s.limiter.Allow()
+		if allow {
+			defer func() {
+				s.limiter.Done()
+			}()
+			s.Send(msg)
+		}
+	}()
 }
 func (s *SysLog) Connect() error {
 	dial, err := syslog.Dial(s.network, s.address, syslog.LOG_INFO, s.topic)
@@ -43,6 +61,7 @@ func (s *SysLog) Open() error {
 		return err
 	}
 	s.stopChannel = make(chan int)
+	s.limiter = NewLimiter(s.workerCount)
 	s.status = 1
 	go func() {
 		for {
@@ -75,12 +94,13 @@ func (s *SysLog) GetName() string {
 	return s.name
 }
 
-func NewSysLogMessageSender(name string, topic string, network network, address string) MessageSender {
+func NewSysLogMessageSender(name string, topic string, network network, address string, workerCount int) MessageSender {
 	log := SysLog{
-		name:    name,
-		topic:   topic,
-		network: string(network),
-		address: address,
+		name:        name,
+		topic:       topic,
+		network:     string(network),
+		address:     address,
+		workerCount: workerCount,
 	}
 	return &log
 }
