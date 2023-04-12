@@ -1,3 +1,5 @@
+//go:build linux
+
 package pusher
 
 import (
@@ -84,7 +86,9 @@ func (s *SysLog) Open() error {
 }
 func (s *SysLog) Close() {
 	s.stopChannel <- 1
-	s.dial.Close()
+	if s.dial != nil {
+		s.dial.Close()
+	}
 }
 
 func (s *SysLog) GetSpeed() uint64 {

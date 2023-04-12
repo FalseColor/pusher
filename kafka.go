@@ -90,7 +90,9 @@ func (k *Kafka) Open() error {
 }
 func (k *Kafka) Close() {
 	k.stopChannel <- 1
-	k.dial.Close()
+	if k.dial != nil {
+		k.dial.Close()
+	}
 }
 func (k *Kafka) GetSpeed() uint64 {
 	return k.speed
