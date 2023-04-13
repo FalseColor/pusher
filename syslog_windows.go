@@ -81,12 +81,5 @@ func (s *SysLog) GetName() string {
 }
 
 func NewSysLogMessageSender(name string, topic string, network network, address string, workerCount int) MessageSender {
-	log := SysLog{
-		name:        name,
-		topic:       topic,
-		network:     string(network),
-		address:     address,
-		workerCount: workerCount,
-	}
-	return &log
+	return nil
 }
